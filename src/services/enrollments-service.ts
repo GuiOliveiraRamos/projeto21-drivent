@@ -12,22 +12,24 @@ async function validateCep(cep: string) {
   if (cep.match(cepFormat) === null) {
     throw invalidDataError('CEP inválido. Use o formato "00000-000"');
   }
-  try {
-    const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
+  const result = await request.get(`${process.env.VIA_CEP_API}/${cep}/json/`);
 
-    if (result.data.erro === true) {
-      throw invalidDataError('CEP não encontrado.');
-    }
-
-    return result;
-  } catch (error) {
-    throw error;
+  if (result.data.erro === true) {
+    throw invalidDataError('CEP não encontrado.');
   }
+  return result;
 }
 
 async function getAddressFromCEP(cep: string): Promise<CepData> {
   const result = await validateCep(cep);
-  return result.data;
+  const { logradouro, complemento, bairro, localidade, uf } = result.data;
+  return {
+    logradouro,
+    complemento,
+    bairro,
+    cidade: localidade,
+    uf,
+  };
 }
 
 async function getOneWithAddressByUserId(userId: number): Promise<GetOneWithAddressByUserIdResult> {
