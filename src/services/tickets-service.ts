@@ -24,11 +24,11 @@ async function postNewTicket(userId: number, ticketTypeId: number): Promise<Tick
   const verifyEnrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!verifyEnrollment) throw notFoundError();
 
-  if (!ticketTypeId) throw requestError(400, 'Ticket type ID is required');
+  if (typeof ticketTypeId !== 'number') throw requestError(400, 'ticketTypeId is required');
 
-  await ticketsRepository.findUserTicket(verifyEnrollment.id);
+  const result = await ticketsRepository.createTicket(verifyEnrollment.id, ticketTypeId);
 
-  return await ticketsRepository.createTicket(verifyEnrollment.id, ticketTypeId);
+  return result;
 }
 
 export const ticketsService = {
