@@ -5,9 +5,13 @@ import { hotelsRepository } from '@/repositories/hotel.repository';
 
 async function getHotels(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+
+  if (!enrollment) {
+    throw notFoundError();
+  }
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!enrollment || !ticket) {
+  if (!ticket) {
     throw notFoundError();
   }
 
@@ -20,9 +24,13 @@ async function getHotels(userId: number) {
 
 async function getRooms(userId: number, hotelId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+
+  if (!enrollment) {
+    throw notFoundError();
+  }
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!enrollment || !ticket) {
+  if (!ticket) {
     throw notFoundError();
   }
 
