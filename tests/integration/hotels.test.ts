@@ -81,22 +81,27 @@ describe('when token is valid', () => {
     const ticketType = await createTicketType(undefined, true);
     const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
     await createPayment(ticket.id, ticketType.price);
-
-    const createdHotel = await createHotel();
+    const hotelTestOne = await createHotel();
+    const hotelTestTwo = await createHotel();
 
     const response = await api.get('/hotels').set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toEqual(httpStatus.OK);
 
-    expect(response.body).toEqual([
-      {
-        id: createdHotel.id,
-        name: createdHotel.name,
-        image: createdHotel.image,
-        createdAt: createdHotel.createdAt.toISOString(),
-        updatedAt: createdHotel.updatedAt.toISOString(),
-      },
-    ]);
+    expect(response.body).toEqual(
+      expect.arrayContaining([
+        {
+          ...hotelTestOne,
+          updatedAt: new Date(hotelTestOne.updatedAt).toISOString(),
+          createdAt: new Date(hotelTestOne.createdAt).toISOString(),
+        },
+        {
+          ...hotelTestTwo,
+          updatedAt: new Date(hotelTestTwo.updatedAt).toISOString(),
+          createdAt: new Date(hotelTestTwo.createdAt).toISOString(),
+        },
+      ]),
+    );
   });
 });
 
@@ -136,12 +141,13 @@ describe('when token is valid', () => {
     const user = await createUser();
     const token = await generateValidToken(user);
     const enrollment = await createEnrollmentWithAddress(user);
-    const ticketType = await createTicketType(undefined, true);
+    const includesHotel = true;
+    const ticketType = await createTicketType(undefined, includesHotel);
     const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
     await createPayment(ticket.id, ticketType.price);
     await createHotel();
 
-    const response = await api.get('/hotels/1').set('Authorization', `Bearer ${token}`);
+    const response = await api.get('/hotels/80').set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toEqual(httpStatus.NOT_FOUND);
   });
@@ -152,7 +158,7 @@ describe('when token is valid', () => {
     const enrollment = await createEnrollmentWithAddress(user);
     const includesHotel = true;
     const ticketType = await createTicketType(undefined, includesHotel);
-    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+    const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
 
     await createPayment(ticket.id, ticketType.price);
 
