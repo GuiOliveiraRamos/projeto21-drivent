@@ -1,3 +1,4 @@
+import { TicketStatus } from '@prisma/client';
 import { notFoundError } from '@/errors';
 import { PaymentRequiredError } from '@/errors/payment-required-error';
 import { enrollmentRepository, ticketsRepository } from '@/repositories';
@@ -15,7 +16,7 @@ async function getHotels(userId: number) {
     throw notFoundError();
   }
 
-  if (ticket.status !== 'PAID' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
+  if (ticket.status === TicketStatus.RESERVED || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
     throw PaymentRequiredError();
   }
   const listHotels = await hotelsRepository.findHotels();
@@ -28,20 +29,17 @@ async function getHotels(userId: number) {
 async function getRooms(userId: number, hotelId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
 
-  if (!enrollment) {
-    throw notFoundError();
-  }
+  if (!enrollment) throw notFoundError();
+
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!ticket) {
-    throw notFoundError();
-  }
+  if (!ticket) throw notFoundError();
 
-  if (ticket.status !== 'PAID' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
+  if (ticket.status === TicketStatus.RESERVED || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
     throw PaymentRequiredError();
   }
 
-  const rooms = await hotelsRepository.findRooms(hotelId);
+  const rooms = await hotelsRepository.findHotelsById(hotelId);
 
   if (!rooms) throw notFoundError();
 
