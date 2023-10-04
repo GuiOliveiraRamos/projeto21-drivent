@@ -1,11 +1,10 @@
 import { prisma } from '@/config';
-import { notFoundError } from '@/errors';
 
 async function findHotels() {
   return prisma.hotel.findMany();
 }
 
-async function findHotelsById(hotelId: number) {
+async function findRoomsByHotelId(hotelId: number) {
   return prisma.hotel.findFirst({
     where: {
       id: hotelId,
@@ -16,7 +15,7 @@ async function findHotelsById(hotelId: number) {
   });
 }
 
-export const hotelsRepository = {
+export const hotelRepository = {
   findHotels,
-  findHotelsById,
+  findRoomsByHotelId,
 };
