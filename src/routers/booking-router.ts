@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { authenticateToken, validateBody } from '@/middlewares';
-import { getEnrollmentByUser, postCreateOrUpdateEnrollment, getAddressFromCEP } from '@/controllers';
 import { createOrUpdateEnrollmentSchema } from '@/schemas';
+import { editBooking, getBookings, postBooking } from '@/controllers/booking-controller';
 
 const bookingRouter = Router();
 
 bookingRouter
   .all('/*', authenticateToken)
-  .get('/', getAddressFromCEP)
-  .post('/', getEnrollmentByUser)
-  .post('/:bookingId', validateBody(createOrUpdateEnrollmentSchema), postCreateOrUpdateEnrollment);
+  .get('/', getBookings)
+  .post('/', postBooking)
+  .post('/:bookingId', editBooking);
 
 export { bookingRouter };
