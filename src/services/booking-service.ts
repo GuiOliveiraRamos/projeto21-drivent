@@ -48,7 +48,7 @@ async function editBooking(userId: number, roomId: number, bookingId: number) {
   if (!findBooking || findBooking.id !== bookingId) throw forbiddenError();
 
   const checkRoom = await hotelRepository.findRoomById(roomId);
-  if (!checkRoom) throw notFoundError();
+  if (!checkRoom) throw forbiddenError();
   if (checkRoom.Booking.length >= checkRoom.capacity) {
     throw forbiddenError();
   }

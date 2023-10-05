@@ -25,8 +25,6 @@ export async function editBooking(req: AuthenticatedRequest, res: Response) {
   const { roomId } = req.body;
   const bookingId = Number(req.params.bookingId);
 
-  if (bookingId <= 0 || isNaN(bookingId)) throw requestError(400, 'invalid bookingId');
-
   const result = await bookingService.editBooking(userId, roomId, bookingId);
   res.status(httpStatus.OK).send(result);
 }
