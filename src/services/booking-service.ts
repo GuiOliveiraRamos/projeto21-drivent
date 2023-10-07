@@ -53,7 +53,7 @@ async function editBooking(userId: number, roomId: number, bookingId: number) {
     throw forbiddenError();
   }
 
-  const editBooking = await bookingRepository.editBooking(userId, roomId);
+  const editBooking = await bookingRepository.editBooking(bookingId, roomId);
 
   return {
     bookingId: editBooking.id,
