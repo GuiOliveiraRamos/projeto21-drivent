@@ -24,9 +24,11 @@ function createBooking(userId: number, roomId: number) {
 
 function editBooking(id: number, roomId: number) {
   return prisma.booking.update({
-    where: { id },
     data: {
       roomId,
+    },
+    where: {
+      id,
     },
     select: {
       id: true,
